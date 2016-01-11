@@ -5,7 +5,7 @@ class PublicControl{
     }
     
     function getMenu(){
-        $group=$_ENV['M']->select("select * from gd_group");
+        $group=$_ENV['M']->select("select * from gd_group order by sort");
         foreach ($group as $k=>$v){
             $group[$k]['node']=$_ENV['M']->select("select * from gd_node where group_id={$v['id']} and level=2");
         }
