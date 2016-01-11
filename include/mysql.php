@@ -10,16 +10,16 @@ class mysqlDao{
 	var $tables;
 	var $debug=false;
 	function __construct(){
-     	
+	    $this->init();
     }
 	//以下是基础操作====================================================================================
 	
-	function init($db_host,$db_user,$db_pass,$db_name,$db_encoding="utf8"){
-		$this->db_host=$db_host;
-		$this->db_user=$db_user;
-		$this->db_pass=$db_pass;
-		$this->db_name=$db_name;
-		$this->db_encoding=$db_encoding;
+	function init(){
+		$this->db_host=C('db_host');
+		$this->db_user=C('db_user');
+		$this->db_pass=C('db_pass');
+		$this->db_name=C('db_name');
+		$this->db_encoding="utf8";
 	}
 	
 	function get_conn(){
@@ -33,17 +33,6 @@ class mysqlDao{
 			$this->get_conn();
 		}
 		$rs=mysql_query($sql,$this->conn);
-		//是否开启SQL调试
-		if($this->debug){
-			$error_msg=$this->get_error_message();
-			if($error_msg!=""){
-				$sql_str=addslashes($sql);
-				$error_msg=addslashes($error_msg);
-				$url=addslashes($_SERVER["REQUEST_URI"]);
-				$debug_sql="insert into {$this->tables->sql_debug} set content_url='{$url}', content_sql='{$sql_str}',content_error='{$error_msg}',create_time=now()";
-				mysql_query($debug_sql,$this->conn);
-			}
-		}
 		return $rs;
 	}
 	
@@ -59,7 +48,7 @@ class mysqlDao{
 		return mysql_error ($this->conn);
 	}
 	
-	function get_datalist($sql){
+	function select($sql){
 		$R=$this->query($sql);
 		if($R)
 		while($v=mysql_fetch_assoc($R)){
@@ -68,7 +57,7 @@ class mysqlDao{
 		return $datalist;
 	}
 	
-	function get_row_by_where($table,$where,$field_arr=NULL){
+	function find($table,$where,$field_arr=NULL){
 		
 		if(!array($field_arr) || count($field_arr)==0){
 			$field_str="*";
