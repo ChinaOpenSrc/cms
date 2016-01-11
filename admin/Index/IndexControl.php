@@ -2,6 +2,10 @@
 class IndexControl{
     public function index(){
         $a=11111;
-        return $a;
+        tpl();
+    }
+    
+    public function add(){
+        return array("a","bbb","ccccc");
     }
 }
