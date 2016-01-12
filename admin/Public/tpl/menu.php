@@ -28,7 +28,7 @@ $meau=$Pubic->getMenu();
                 <?php if($v['node'])foreach ($v['node'] as $v1){?>
                 <li>
 <!--                     <if condition="$vosub['hassub'] eq 1"> -->
-                        <a href="index.php?c=<?php echo $v['name']?>&a=index"  zs-id="<?php echo $v1['icon']?>" ><i class="glyph-icon <?php echo $v1['icon']?>"></i><?php echo $v1['title']?></a>                        
+                        <a href="index.php?c=<?php echo $v1['name']?>&a=index"  zs-id="<?php echo $v1['icon']?>" ><i class="glyph-icon <?php echo $v1['icon']?>"></i><?php echo $v1['title']?></a>                        
 <!--                         <ul class="sub mrg10A"> -->
 <!--                         <volist name="vosub['sub']" id="vosubsub"> -->
 <!--                             <li><a  href="{$vosubsub['url']}" rel="{$vosubsub['rel']}"  zs-id="{$vosubsub['id']}"><i class="glyph-icon icon-chevron-right"></i>{$vosubsub.title}</a></li> -->

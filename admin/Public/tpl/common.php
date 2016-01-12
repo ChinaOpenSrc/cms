@@ -25,7 +25,14 @@
             </div><!-- #page-breadcrumb-wrapper -->
         
             <div id="page-content">
-            <?php require DIR.'/admin/'.CNAME.'/tpl/'.ANAME.".php";?>
+            <?php 
+                $file=DIR.'/admin/'.CNAME.'/tpl/'.ANAME.".php";
+                if(file_exists($file)){
+                    require $file;
+                }else{
+                    echo "模板文件   $file 不存在";
+                }
+            ?>
             </div><!-- #page-content -->
             
         </div><!-- #page-main -->

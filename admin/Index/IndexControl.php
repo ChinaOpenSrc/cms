@@ -2,7 +2,7 @@
 class IndexControl{
     public function index(){
         $a=11111;
-        tpl();
+        thisTpl();
     }
     
     public function add(){

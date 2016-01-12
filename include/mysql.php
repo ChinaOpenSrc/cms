@@ -9,8 +9,31 @@ class mysqlDao{
 	var $db_encoding;
 	var $tables;
 	var $debug=false;
+	
+	var $sql = array(
+	    "field" => "",
+	    "where" => "",
+	    "order" => "",
+	    "limit" => "",
+	    "group" => "",
+	    "having" => "",
+	);
+	
 	function __construct(){
 	    $this->init();
+    }
+    
+    function __call($methodName,$args){
+        $methodName=strtolower($methodName);
+        if(isset($this->sql[$methodName])){
+            if($methodName=="where"){
+                echo $this->sql[$methodName]="where {$args[0]}";
+            }
+            $this->sql[$methodName]=$args[0];
+        }else{
+            echo '调用类'.get_class($this).'中的'.$methodName.'()方法不存在';
+        }
+        return $this;
     }
 	//以下是基础操作====================================================================================
 	
@@ -48,8 +71,11 @@ class mysqlDao{
 		return mysql_error ($this->conn);
 	}
 	
-	function select($sql){
+	function select(){
+	    $tables=C("db_prefix").$this->tables;
+	    echo $sql="select * from $tables {$this->sql['where']}";
 		$R=$this->query($sql);
+		var_dump($R);
 		if($R)
 		while($v=mysql_fetch_assoc($R)){
 			$datalist[]=$v;

@@ -1,5 +1,7 @@
 <?php
-function display($name=""){
-    $name=$name==""?$_ENV['M_NAME']:$name;
-    require __ROOT__.'/V/'.$name.".php";
+function M($db_name=CNAME){
+    $m= new mysqlDao();
+    $m->tables=$db_name;
+    return $m;
 }
+
