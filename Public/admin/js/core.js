@@ -2,36 +2,22 @@ $.fn.extend({
 	formAjax:function(){
 		return this.each(function(){
 			var $this = $(this);
-			
 			$this.submit(function(event){
 				event.preventDefault();
-				
-				
 				var url = $this.attr("action"),data=$this.serialize();
-				
 				  $.post(url, data,  function(data) {
-					
-					 
 	                    if (data.status) {
 	                    	if(data.url==''){
 	                    		layer.statusinfo(data.info,'success',function(){location.reload()});
 	                    	}else{
 	                    		layer.statusinfo(data.info+"&nbsp;&nbsp;2秒后跳转",'success',urllocation,data.url);
 	                    	}
-	                    	
-	                    	
-	                       
 	                    } else {
 	                    	layer.statusinfo(data.info,'error');
-	                    	
-	                       
-	                        
 	                    }
 	                }, "json"
 	                );
-				 
 			});
-			
 		});
 	},
 	AjaxTodo:function(){
@@ -39,7 +25,6 @@ $.fn.extend({
 			var $this = $(this);
 			$this.click(function(event){
 				event.preventDefault();
-				
 				var url = $this.attr("href");
 				var title = $this.attr("title");
 				if (title) {
@@ -52,19 +37,16 @@ $.fn.extend({
 				} else {
 					AjaxTodo(url, $this.attr("callback"));
 				}
-				
 			});
 		});
 	},
 
 	dwzExport: function(){
 		function _doExport($this) {
-			
 			var $form = $("#formsearch");
 			var url = $this.attr("href");
 			window.location = url+(url.indexOf('?') == -1 ? "?" : "&")+$form.serialize();
 		}
-		
 		return this.each(function(){
 			var $this = $(this);
 			$this.click(function(event){
@@ -73,27 +55,23 @@ $.fn.extend({
 					alertMsg.confirm(title, {
 						okCall: function(){_doExport($this);}
 					});
-				} else {_doExport($this);}
-			
-				event.preventDefault();
+				}else{_doExport($this);}
+					event.preventDefault();
 			});
 		});
 	},
 	checkedExport: function() {
         function _doCheckedExport($this) {
-          
             var url = $this.attr('href'),
                 idname = $this.attr('idname');
             if (!idname) {
             	alertmessage('error','未定义选中项的id名称[复选框的name]！','','',3);
-                
                 return;
             }
             var ids = [];
             var $check = $(':checkbox[name='+ idname +']:checked');
             if ($check.length == 0) {
             	alertmessage('error','未选中任何一项！','','',3);
-            
                 return;
             }
             var ids = [];
@@ -106,18 +84,15 @@ $.fn.extend({
             var $this = $(this);
             $this.click(function(event){
                 var title = $this.attr('title');
-                
                 if (title) {
 					layer.confirm(title,function(index){
 						layer.close(index);
-						
 						_doCheckedExport($this);
 						}
 					);
 				} else {
 					_doCheckedExport($this);
 				}
-               
                 event.preventDefault();
             });
         });
@@ -126,19 +101,16 @@ $.fn.extend({
     checkedAjaxTodo:function(){
         return this.each(function(){
             var $this = $(this);
-            
             $this.click(function(event){
                 var url = $this.attr("href"),
                     idname = $this.attr('idname');
                 if (!idname) {
                 	alertmessage('error','未定义选中项的id名称[复选框的name]！','','',3);
-                   
                     return false;
                 }
                 var ids = [];
                 var $check = $(':checkbox[name='+ idname +']:checked');
                 if ($check.length == 0) {
-                    
                     alertmessage('error','未选中任何一项！','','',3);
                     return false;
                 }
@@ -158,42 +130,26 @@ $.fn.extend({
 				} else {
 					AjaxTodo(url, $this.attr("callback"));
 				}
-              
                 event.preventDefault();
             });
         });
     }
 });
+
 function ajaxform(index,obj){
-	
-	
 	var url = $(obj).attr("action"),datax=$(obj).serialize();
-	
-	
 	  $.post(url, datax,  function(data) {
-		 
 		  if (data.statusCode=='200') {
               layer.close(index);
-              
             	  alertmessage('success',data.message,'','',2,'','','',function(){window.location.reload();});  
-              
-        	  
-             
           } else {
-          	
         	  alertmessage('error',data.message,'','',3);
-             
-              
           }
       }, "json"
       );
-	
-	
-	
-	
 }
+
 function zsalert(type,text,closetype,layout,time,onShow,afterShow,onClose,afterClose,onCloseClick){
-	
 	var type=type||'success',
 	    text=text||'nothing',
 	    closetype=closetype||'click',
@@ -328,102 +284,64 @@ if(time>0){
 
 
 function AjaxDone(data){
-	
-	
-	
 	if(data.statusCode=='200'){
-		
-		
 		layer.closeAll();
 		alertmessage('success',data.message,'','',2,'','','',function(){window.location.reload();});
 	}else{
 		alertmessage('error',data.message,'','',3);
 	}
-	
-	
-	
-	
 }
+
 function TabAjaxDone(data,url){
-	
-	
-	
 	if(data.statusCode=='200'){
-		
-		
-	
 		alertmessage('success',data.message,'','',2,'','','',function(){window.location=url});
 	}else{
 		alertmessage('error',data.message,'','',3);
 	}
-	
-	
-	
-	
 }
+
 function AjaxError(data){
-	
 	if(data.status=='200'){
-		
 	}else{
-		
 	}
-	
-	
-	
-	
 }
 
 function clearQuery(obj){
 	var url=$('#formsearch').attr('action');
-	//$('input').val('');
-	//$('select').val('');
-	//var data=$('#formsearch').serialize();
-	//alert(data);
 	window.location=url;
-		//$('#formsearch').submit();
-	
 }
+
 function userBrowser(){  //判断浏览器类型
     var browserName=navigator.userAgent.toLowerCase();  
     if(/msie/i.test(browserName) && !/opera/.test(browserName)){  
-       
         return "IE";  
     }else if(/firefox/i.test(browserName)){  
-       
         return "Firefox";  
     }else if(/chrome/i.test(browserName) && /webkit/i.test(browserName) && /mozilla/i.test(browserName)){  
-        
         return "Chrome";  
     }else if(/opera/i.test(browserName)){  
-       
         return "Opera";  
     }else if(/webkit/i.test(browserName) &&!(/chrome/i.test(browserName) && /webkit/i.test(browserName) && /mozilla/i.test(browserName))){  
-        
         return "Safari";  
     }else{  
-       
-        return "unKnow";  
-    }  
-} 
-function useIEversion(){  //判断ie的版本
-    var browserName=navigator.userAgent.toLowerCase();  
-    if(!$.support.opacity&&!$.support.style&&window.XMLHttpResquest==undefined){  
-       
-        return "6";  
-    }else if(!$.support.opacity&&!$.support.style&&window.XMLHttpResquest!=undefined){  
-       
-        return "7";  
-    }else if(!$.support.opacity&&$.support.style&&window.XMLHttpResquest!=undefined){  
-       
-        return "8";  
-    }else{  
-       
         return "unKnow";  
     }  
 }
+
+function useIEversion(){  //判断ie的版本
+    var browserName=navigator.userAgent.toLowerCase();  
+    if(!$.support.opacity&&!$.support.style&&window.XMLHttpResquest==undefined){  
+        return "6";  
+    }else if(!$.support.opacity&&!$.support.style&&window.XMLHttpResquest!=undefined){  
+        return "7";  
+    }else if(!$.support.opacity&&$.support.style&&window.XMLHttpResquest!=undefined){  
+        return "8";  
+    }else{  
+        return "unKnow";  
+    }  
+}
+
 function AjaxTodo(url, callback){
-	
 	var $callback = callback || AjaxDone;
 	if (! $.isFunction($callback)) $callback = eval('(' + callback + ')');
 	$.ajax({
@@ -448,55 +366,34 @@ function str2Func(method) {
     }
     return undefined;
 }
+
 function layoutFormatter (){
-
-    /* Layout Formatter */
-
     setTimeout(function() {
-
         var windowH = $(window).height();
         var docH = $(document).height();
-
         var documentH = $('#page-main').height();
-        
         var headerH = $('#header-logo').height();
         var searchH = $('#sidebar-search').height();
         var sidebarH = $('#page-sidebar').height();
-
         var menuHeight = windowH - headerH - searchH - 21;
-
         if ( $( 'body' ).hasClass( "fixed-sidebar" ) ) {
-
             $('#page-sidebar').height(windowH);
             $("#sidebar-menu").height(menuHeight);
-
-          } else {
-
+        } else {
             $("#page-sidebar").css("min-height", documentH);
-
-          }
-
-        if ( sidebarH > documentH ) {
-
-            $('#page-main').height(sidebarH);
-
         }
 
+        if ( sidebarH > documentH ) {
+            $('#page-main').height(sidebarH);
+        }
     }, 499);
-
   };
   $(window).resize(function(){
-
 	  layoutFormatter();
-
-	});
+  });
   function validateCallback(form, callback) {
 		var $form = $(form);
-		
-		
-		
 		var $callback = callback;
-		
 	if($callback=='TabAjaxDone'){
 		var _submitFn = function(){
 			$.ajax({
@@ -507,19 +404,12 @@ function layoutFormatter (){
 				cache: false,
 				success: function(data){
 					var url=$form.attr('url');
-					
 					TabAjaxDone(data,url);
-					
 				},
 				error: AjaxError
 			});
 		}
-		
-		
-		
-		
 	}else{
-		
 		var _submitFn = function(){
 			$.ajax({
 				type: form.method || 'POST',
@@ -528,46 +418,26 @@ function layoutFormatter (){
 				dataType:"json",
 				cache: false,
 				success: function(data){
-					
-					
 					AjaxDone(data);
-					
 				},
 				error: AjaxError
 			});
 		}
-		
-		
-		
-		
 	}
-		
-		
-		
-		
 			_submitFn();
-			
-		
 		return false;
 	}
   function validateform(){
-	  
-	  //
 	    $("form.form-validate").each(function() {
 	        var $this       = $(this);
 	        var overflowDIV = $this.attr('overflowDIV') || '.form-validate';
 	        var callback    = $this.attr('callback') || 'AjaxDone';
-	    
-	      
-	        
 	        $this.validationEngine({
 	            isOverflown: true,
 	            overflowDIV: overflowDIV,
 	            promptPosition: 'Right',
 	            onValidationComplete: function(form, valid) {
-	        	
 	                if (valid) {
-	                	
 	                    return validateCallback(form, callback);
 	                } else {
 	                    return false;
@@ -575,9 +445,6 @@ function layoutFormatter (){
 	            }
 	        });
 	    });
-	  
-	  
-	  
   }
   
   function setactive(id){
@@ -585,16 +452,10 @@ function layoutFormatter (){
 	  $('#sidebar-menu li').removeClass('active');
 	  $('a[zs-id='+id+']').closest('li').addClass('current-page');
 	  $('a[zs-id='+id+']').closest('li.sub-menu').addClass('active');
-	
   }
   
-  
-  
-  
 function initUI(){
-	
 	validateform();
-	
 	layoutFormatter();
 	  $(".scrollable-content").niceScroll({
 	      cursorborder: "transparent solid 2px",
@@ -669,7 +530,6 @@ function initUI(){
 		  }
 	 
 	if ($.fn.formAjax) $("form[target=formAjax]").formAjax();
-	
 	if ($.fn.AjaxTodo) $("a[target=AjaxTodo]").AjaxTodo();	
 	if ($.fn.checkedExport) $("a[target=checkedExport]").checkedExport(); //选中导出
     if ($.fn.checkedAjaxTodo) $("a[target=checkedAjaxTodo]").checkedAjaxTodo(); //选中项ajaxPost
@@ -775,18 +635,13 @@ function initUI(){
 		
 	});
 	
-    
-
-	
 	
 $('.j-icheck').iCheck({
-    	
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
         increaseArea: '20%' // optional
     });
 	 $(':checkbox.checkboxCtrl').on('ifChanged', function(event) {
-	    	
 	        var checked = event.target.checked == true ? 'check' : 'uncheck';
 	        var group = $(this).attr('group');
 	        $(":checkbox[name='"+ group +"']").iCheck(checked);
@@ -815,51 +670,31 @@ $('.j-icheck').iCheck({
 							    closeBtn: [0,true],
 							    shadeClose: false,
 							    area: [w, h],
-							   
 							    page: {
 							        html: data,
-							        
 							    },
 							    yes:function(index){
-							    	
 							    	if($('.xubox_yes').closest('form').hasClass('form-validate')){
-							    		//validateform(true);
-							    		
 							    		$('.xubox_yes').closest('form').submit();
-							    	
-							    		
 							    	}else{
 							    		ajaxform(index,$('.xubox_yes').closest('form'));
 							    	}
-							    	
-							    	
-							    	//layer.close(index);
-							    
-							    
 							    }
-						
 						});
 						$('select.selectpicker').selectpicker();	
 						validateform();
 						$('.j-icheck').iCheck({
-					    	
 					        checkboxClass: 'icheckbox_square-green',
 					        radioClass: 'iradio_square-green',
-					        
 					    });
-						
 					},
 					error: AjaxError
 				});
-				
-				
-				
 				return false;
 			});
 		});
 	
 	$("#zstable").dataTable({  
-	
        "bPaginate": true, //开关，是否显示分页器  
        "bInfo": true, //开关，是否显示表格的一些信息  
        "bFilter": false, //开关，是否启用客户端过滤器  
@@ -869,8 +704,7 @@ $('.j-icheck').iCheck({
        "bStateSave": true, //开关，是否打开客户端状态记录功能。这个数据是记录在cookies中的， 打开了这个记录后，即使刷新一次页面，或重新打开浏览器，之前的状态都是保存下来的- ------当值为true时aoColumnDefs不能隐藏列  
        "aoColumnDefs": [ { 'bSortable': false, 'aTargets':['nosort']},{ "bSearchable": false, "aTargets":['nosearch']  }]  ,
        "fnInitComplete": function(oSettings, json) {
-    
-    	  
+    	   
     	},
     	"sDom":'<"H"lfrpi><"F">t',
        "sPaginationType": "full_numbers",  
@@ -890,22 +724,14 @@ $('.j-icheck').iCheck({
                "sLast": "末页"  
            }  
        } //多语言配置  
-
-
-
    });  
-	
-	
 	
 	 $('select[name=zstable_length]').addClass('selectpicker show-tick');
 	 $('select[name=zstable_length]').attr('data-style','btn medium bg-blue-alt');
 	 $('select[name=zstable_length]').attr('data-width','auto');
 	 $('select[name=zstable_length]').attr('data-container','body');
-	
-	$('select.selectpicker').selectpicker();	
+	 $('select.selectpicker').selectpicker();	
 
-	
-	   //dragsort
     if ($.fn.dragsort) {
         $('.zs-dragsort').each(function() {
             var $this = $(this);
@@ -999,7 +825,6 @@ $('.j-icheck').iCheck({
     if ($.fn.tags) {
         $(".tags-control").each(function() {
             var $this = $(this);
-            
             var url   = $this.data('url'),
                 type  = $this.data('type') || 'GET',
                 param = $this.data('parametername') || 'tagName',
@@ -1014,8 +839,6 @@ $('.j-icheck').iCheck({
             });
         });
     }
-	
-	
 }
 	
 

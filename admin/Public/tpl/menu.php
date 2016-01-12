@@ -18,7 +18,7 @@ $meau=$Pubic->getMenu();
     <div id="sidebar-menu" class="scrollable-content">
         <ul>
             <li>
-                <a href="{:U('Admin/Index/index')}"  title="Dashboard">
+                <a href="<?php url("Index")?>"  title="Dashboard">
                     <i class="glyph-icon icon-dashboard"></i>后台首页</a>
             </li>
         <?php if($meau)foreach ($meau as $v){?>

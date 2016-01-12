@@ -1,8 +1,8 @@
 <?php
 class IndexControl{
     public function index(){
-        $a=11111;
-        thisTpl();
+        echo $a=11111;
+        Tpl();
     }
     
     public function add(){

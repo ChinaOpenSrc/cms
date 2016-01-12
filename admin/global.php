@@ -8,6 +8,7 @@ define("ANAME",$a_name);
 require DIR.'/include/common.php';
 require DIR.'/include/mysql.php';
 require DIR.'/include/config.php';
+require DIR.'/admin/base.php';
 
 function __autoload($class_name){
     $class_name=str_replace("Control","",$class_name);
@@ -57,15 +58,13 @@ function inti(){
     
 }
 
-function thisTpl($record){
-    $file=DIR."/admin/Public/tpl/common.php";
-    if(file_exists($file)){
-        require $file;
-    }else{
-        exit($file." is not found!");
-    }
+function Tpl($record=null){
+    require DIR.'/admin/'.CNAME."/tpl/".ANAME.".php";
 }
 
-function thisurl($c=CNAME,$a="index"){
+function url($a=null,$c=CNAME){
+    if($a==null){
+        $a=ANAME;
+    }
     echo "index.php?c=$c&a=$a";
 }

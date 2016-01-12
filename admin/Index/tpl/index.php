@@ -1,7 +1,4 @@
-<?php 
-$rs=$_ENV['Index']->add();
-
-?>
+<?php require DIR."/admin/Public/tpl/common.php";?>
 
 <div class="example-code">
     <div class="row mrg20B">
@@ -84,7 +81,4 @@ $rs=$_ENV['Index']->add();
         </li>
     </ul>
 </div>
-
-
-                
-</block>
+<?php require DIR."/admin/Public/tpl/foot.php";?>

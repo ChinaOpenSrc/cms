@@ -21,17 +21,27 @@ class mysqlDao{
 	
 	function __construct(){
 	    $this->init();
+	    if($this->conn==''){
+	        $this->get_conn();
+	    }
     }
     
     function __call($methodName,$args){
         $methodName=strtolower($methodName);
         if(isset($this->sql[$methodName])){
-            if($methodName=="where"){
-                echo $this->sql[$methodName]="where {$args[0]}";
+            if($methodName=="where" && $args){
+                $this->sql[$methodName]="where {$args[0]}";
+            }elseif ($methodName=="group" && $args){
+                $this->sql[$methodName]="GROUP BY {$args[0]}";
+            }elseif ($methodName=="order" && $args){
+                $this->sql[$methodName]="order BY {$args[0]}";
+            }elseif ($methodName=="having" && $args){
+                $this->sql[$methodName]="having {$args[0]}";
+            }elseif ($methodName=="limit" && $args){
+                $this->sql[$methodName]="limit {$args[0]}";
+            }elseif($methodName="field" && $args){
+                $this->sql[$methodName]=$args[0];
             }
-            $this->sql[$methodName]=$args[0];
-        }else{
-            echo '调用类'.get_class($this).'中的'.$methodName.'()方法不存在';
         }
         return $this;
     }
@@ -52,11 +62,12 @@ class mysqlDao{
 	}
 	
 	function query($sql){
-		if($this->conn==''){
-			$this->get_conn();
-		}
 		$rs=mysql_query($sql,$this->conn);
-		return $rs;
+		if($R)
+		    while($v=mysql_fetch_assoc($R)){
+		    $datalist[]=$v;
+		}
+		return $datalist;
 	}
 	
 	function get_insert_id(){
@@ -73,9 +84,8 @@ class mysqlDao{
 	
 	function select(){
 	    $tables=C("db_prefix").$this->tables;
-	    echo $sql="select * from $tables {$this->sql['where']}";
-		$R=$this->query($sql);
-		var_dump($R);
+	    $sql="select * from $tables {$this->sql['where']} {$this->sql['group']} {$this->sql['having']} {$this->sql['order']} {$this->sql['limit']}";
+		$R=mysql_query($sql,$this->conn);
 		if($R)
 		while($v=mysql_fetch_assoc($R)){
 			$datalist[]=$v;
@@ -83,16 +93,15 @@ class mysqlDao{
 		return $datalist;
 	}
 	
-	function find($table,$where,$field_arr=NULL){
-		
-		if(!array($field_arr) || count($field_arr)==0){
-			$field_str="*";
-		}else{
-			$field_str=implode(',',$field_arr);
-		}
-		
-		$data_list=$this->get_datalist("select {$field_str} from ".$table." ".$where." limit 0,1");
-		return $data_list[0];
+	function find(){
+		$tables=C("db_prefix").$this->tables;
+	    $sql="select * from $tables {$this->sql['where']} {$this->sql['group']} {$this->sql['having']} {$this->sql['order']} limit 1";
+		$R=mysql_query($sql,$this->conn);
+		if($R)
+		while($v=mysql_fetch_assoc($R)){
+			$datalist[]=$v;
+		} 
+		return $datalist[0];
 	}
 	
 	//最后一个参数表示是否需要sql转义,默认为自动判断,可为true,false,"auto"
@@ -115,8 +124,19 @@ class mysqlDao{
 				$value_str.=",'".$vl."'";
 		}
 		$sql="insert into ".$table."(".$field_str.") values(".$value_str.")";
-		$this->query($sql);	
+		$this->mysql_query($sql,$this->conn);
 		return $this->get_insert_id();
+	}
+	
+	function getDbFields(){
+	    $tables=C("db_prefix").$this->tables;
+	    $sql="select COLUMN_NAME from information_schema.COLUMNS where table_name='$tables' and table_schema='{$this->db_name}'";
+	    $R=mysql_query($sql,$this->conn);
+	    if($R)
+	        while($v=mysql_fetch_assoc($R)){
+	        $datalist[]=$v['COLUMN_NAME'];
+	    }
+	    return $datalist;
 	}
 	
 	function update($table,$array,$where,$escape="auto"){
@@ -134,13 +154,13 @@ class mysqlDao{
 		}	
 		$sql="update ".$table." set ".$data_str." ".$where;
 			
-			$this->query($sql);
+			$this->mysql_query($sql,$this->conn);
 		return $this->get_affect_rows();
 	}
 	
 	function delete($table,$where){
 		$sql="delete from ".$table." ".$where;
-		$this->query($sql);	
+		$this->mysql_query($sql,$this->conn);
 		return $this->get_affect_rows();
 	}
 	
