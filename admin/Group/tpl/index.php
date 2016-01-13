@@ -1,21 +1,18 @@
-<?php 
-require DIR."/admin/Public/tpl/common.php";
-?>
+<?php require DIR."/admin/Public/tpl/common.php";?>
 <form  action="" method="post" id="formsearch">
-    <input type="hidden" name="pid" value=""/>
     <div class="example-code">
     
         <div class="form-label float-left" >
            <label>组名称：</label>
         </div>
         
-        <div class="form-input col-md-1">
-            <input  type="text" value="" name="name">
+        <div class="form-input col-md-2">
+            <input  type="text" value="<?php if(!empty($_REQUEST['name']))echo $_REQUEST['name']?>" name="name">
         </div>
 
         <button type="submit" class="btn medium bg-orange"> <span class="button-content"><i class="glyph-icon icon-search"></i>查询</span></button>
         <a class="btn medium bg-blue" href="javascript:clearQuery(this)"><span class="button-content"><i class="glyph-icon icon-undo"></i> 清空查询</span></a>
-        <a href="<?php url("add")?>" target="dialog"  width="460px" height="380px"  title="新增菜单" class="btn medium bg-green"><span class="button-content"><i class="glyph-icon icon-plus"></i> 新增</span></a>
+        <a href="<?=U("add")?>" target="dialog"  width="460px" height="380px"  title="新增菜单" class="btn medium bg-green"><span class="button-content"><i class="glyph-icon icon-plus"></i> 新增</span></a>
                
         <div class="dropdown float-right mrg15R">
             <a href="javascript:;" class="btn medium bg-blue" title="Example dropdown" data-toggle="dropdown">
@@ -40,7 +37,7 @@ require DIR."/admin/Public/tpl/common.php";
                
                 <li class="divider hidden"></li>
                 <li>
-                    <a class="font-orange" href="<?php url("delete")?>"  title="确定要删除选中信息吗？" target="checkedAjaxTodo" idname="ids">
+                    <a class="font-orange" href="<?=U("delete")?>"  title="确定要删除选中信息吗？" target="checkedAjaxTodo" idname="ids">
                         <i class="glyph-icon icon-trash-o"></i>删除选中</a>
                 </li>
             </ul>
@@ -74,11 +71,12 @@ require DIR."/admin/Public/tpl/common.php";
             <td class="text-center"><?php echo $v['status']?></td>
             <td><input type="checkbox" name="ids" class="j-icheck" value="<?php echo $v['id']?>"></td>
             <td>
-                <a href="<?php url("edit")?>"  class="btn small bg-blue" target="dialog" title="编辑菜单"  width="460px" height="380px" ><span class="button-content"><i class="glyph-icon icon-edit"></i> 编辑</span></a>
-                <a href="<?php url("delete")?>" class="btn small bg-red" target="ajaxTodo" title="确定要删除该行信息吗？"><span class="button-content"><i class="glyph-icon icon-trash-o"></i> 删除</span></a>
+                <a href="<?=U("edit")?>&id=<?php echo $v['id']?>"  class="btn small bg-blue" target="dialog" title="编辑菜单"  width="460px" height="380px" ><span class="button-content"><i class="glyph-icon icon-edit"></i> 编辑</span></a>
+                <a href="<?=U("delete")?>&id=<?php echo $v['id']?>" class="btn small bg-red" target="ajaxTodo" title="确定要删除该行信息吗？"><span class="button-content"><i class="glyph-icon icon-trash-o"></i> 删除</span></a>
             </td>
         </tr>
       <?php }?>
       
     </tbody>
 </table>
+<?php require DIR."/admin/Public/tpl/foot.php";?>

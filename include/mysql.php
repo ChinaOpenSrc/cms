@@ -30,18 +30,26 @@ class mysqlDao{
     function __call($methodName,$args){
         $methodName=strtolower($methodName);
         if(isset($this->sql[$methodName])){
-            if($methodName=="where" && !empty($args)){
-                $this->sql[$methodName].="where {$args[0]}";
-            }elseif ($methodName=="group" && !empty($args)){
+            if($methodName=="where" && !empty($args[0])){
+                if(empty($this->sql[$methodName])){
+                    $this->sql[$methodName].="where {$args[0]}";
+                }else{
+                    if(empty($args[1])){
+                        $this->sql[$methodName].=" and {$args[0]}";
+                    }else{
+                        $this->sql[$methodName].=" {$args[1]} {$args[0]}";
+                    }
+                }
+            }elseif ($methodName=="group" && !empty($args[0])){
                 $this->sql[$methodName]="GROUP BY {$args[0]}";
-            }elseif ($methodName=="order" && !empty($args)){
+            }elseif ($methodName=="order" && !empty($args[0])){
                 $this->sql[$methodName]="order BY {$args[0]}";
-            }elseif ($methodName=="having" && !empty($args)){
+            }elseif ($methodName=="having" && !empty($args[0])){
                 $this->sql[$methodName]="having {$args[0]}";
-            }elseif ($methodName=="limit" && !empty($args)){
+            }elseif ($methodName=="limit" && !empty($args[0])){
                 $this->sql[$methodName]="limit {$args[0]}";
-            }elseif($methodName="field" && !empty($args)){
-                $this->sql[$methodName]=$args[0];
+            }elseif($methodName="field" && !empty($args[0])){
+                $this->sql['field']=$args[0];
             }
         }
         return $this;
@@ -63,6 +71,7 @@ class mysqlDao{
 	}
 	
 	function query($sql){
+	    $datalist=array();
 		$rs=mysql_query($sql,$this->conn);
 		if($R)
 		    while($v=mysql_fetch_assoc($R)){
@@ -84,19 +93,21 @@ class mysqlDao{
 	}
 	
 	function select(){
+	    $datalist=array();
 	    $tables=C("db_prefix").$this->tables;
-	    $sql="select * from $tables {$this->sql['where']} {$this->sql['group']} {$this->sql['having']} {$this->sql['order']} {$this->sql['limit']}";
+	    $sql="select {$this->sql['field']} from $tables {$this->sql['where']} {$this->sql['group']} {$this->sql['having']} {$this->sql['order']} {$this->sql['limit']}";
 		$R=mysql_query($sql,$this->conn);
 		if($R)
 		while($v=mysql_fetch_assoc($R)){
 			$datalist[]=$v;
-		} 
+		}
 		return $datalist;
 	}
 	
 	function find(){
+	    $datalist=array();
 		$tables=C("db_prefix").$this->tables;
-	    $sql="select * from $tables {$this->sql['where']} {$this->sql['group']} {$this->sql['having']} {$this->sql['order']} limit 1";
+	    $sql="select {$this->sql['field']} from $tables {$this->sql['where']} {$this->sql['group']} {$this->sql['having']} {$this->sql['order']} limit 1";
 		$R=mysql_query($sql,$this->conn);
 		if($R)
 		while($v=mysql_fetch_assoc($R)){
@@ -118,15 +129,14 @@ class mysqlDao{
 				$field_str.=$key;
 			else
 				$field_str.=",".$key;
-			
 			if($value_str=='')
 				$value_str.="'".$vl."'";
 			else
 				$value_str.=",'".$vl."'";
 		}
 		$tables=C("db_prefix").$this->tables;
-		echo $sql="insert into ".$tables."(".$field_str.") values(".$value_str.")";
-		$this->mysql_query($sql,$this->conn);
+		$sql="insert into ".$tables."(".$field_str.") values(".$value_str.")";
+		$R=mysql_query($sql,$this->conn);
 		return $this->get_insert_id();
 	}
 	
@@ -156,15 +166,14 @@ class mysqlDao{
 		}
 		$tables=C("db_prefix").$this->tables;
 		$sql="update ".$tables." set ".$data_str." {$this->sql['where']}";
-			
-			$this->mysql_query($sql,$this->conn);
+		$R=mysql_query($sql,$this->conn);
 		return $this->get_affect_rows();
 	}
 	
 	function delete(){
 	    $tables=C("db_prefix").$this->tables;
 		$sql="delete from ".$tables." {$this->sql['where']}";
-		$this->mysql_query($sql,$this->conn);
+		$R=mysql_query($sql,$this->conn);
 		return $this->get_affect_rows();
 	}
 	

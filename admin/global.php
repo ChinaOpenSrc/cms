@@ -10,6 +10,8 @@ require DIR.'/include/mysql.php';
 require DIR.'/include/config.php';
 require DIR.'/admin/base.php';
 
+
+
 function __autoload($class_name){
     $class_name=str_replace("Control","",$class_name);
     $file=DIR."/admin/".$class_name."/".$class_name.'Control.php';
@@ -20,12 +22,14 @@ function __autoload($class_name){
     }
 }
 
-function C($key=""){
-    global  $_config;
-    if($key){
-        return $_config[$key];
-    }else{
-        return $_config;
+function C($key="",$val=""){
+    $c=new config();
+    if($key && $val==""){
+        return $c->_config[$key];
+    }elseif($key && $val==""){
+        return $c->_config;
+    }elseif ($key && $val){
+        $c->_config[$key]=$val;
     }
 }
 
@@ -58,13 +62,18 @@ function init(){
     
 }
 
-function Tpl($record=null){
-    require DIR.'/admin/'.CNAME."/tpl/".ANAME.".php";
+function tpl($record=null){
+    $file=DIR.'/admin/'.CNAME."/tpl/".ANAME.".php";
+    if(file_exists($file)){
+        return $file;
+    }else{
+        return "模板文件  $file 不存在";
+    }
 }
 
-function url($a=null,$c=CNAME){
+function U($a=null,$c=CNAME){
     if($a==null){
         $a=ANAME;
     }
-    echo "index.php?c=$c&a=$a";
+    return "index.php?c=$c&a=$a";
 }

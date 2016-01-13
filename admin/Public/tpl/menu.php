@@ -18,7 +18,7 @@ $meau=$Pubic->getMenu();
     <div id="sidebar-menu" class="scrollable-content">
         <ul>
             <li>
-                <a href="<?php url("Index")?>"  title="Dashboard">
+                <a href="<?=U("Index")?>"  title="Dashboard">
                     <i class="glyph-icon icon-dashboard"></i>后台首页</a>
             </li>
         <?php if($meau)foreach ($meau as $v){?>
@@ -28,7 +28,7 @@ $meau=$Pubic->getMenu();
                 <?php if($v['node'])foreach ($v['node'] as $v1){?>
                 <li>
 <!--                     <if condition="$vosub['hassub'] eq 1"> -->
-                        <a href="index.php?c=<?php echo $v1['name']?>&a=index"  zs-id="<?php echo $v1['icon']?>" ><i class="glyph-icon <?php echo $v1['icon']?>"></i><?php echo $v1['title']?></a>                        
+                        <a href="<?=U('index',$v1['name'])?>"  zs-id="<?php echo $v1['icon']?>" ><i class="glyph-icon <?php echo $v1['icon']?>"></i><?php echo $v1['title']?></a>                        
 <!--                         <ul class="sub mrg10A"> -->
 <!--                         <volist name="vosub['sub']" id="vosubsub"> -->
 <!--                             <li><a  href="{$vosubsub['url']}" rel="{$vosubsub['rel']}"  zs-id="{$vosubsub['id']}"><i class="glyph-icon icon-chevron-right"></i>{$vosubsub.title}</a></li> -->

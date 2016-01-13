@@ -1,8 +1,8 @@
 <?php
-class IndexControl{
+class IndexControl extends base{
     public function index(){
         $a=11111;
-        Tpl();
+        require tpl();
     }
     
     public function add(){

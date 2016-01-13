@@ -1,21 +1,35 @@
 <?php
+require DIR.'/include/Rbac.class.php';
 class base{
+    
+//     function __construct(){
+        // 用户权限检查
+//         if (!RBAC::AccessDecision()) {
+            //检查认证识别号
+//             if (!isset($_SESSION[C('USER_AUTH_KEY')])) {
+//                 //没有uid则跳转到认证网关
+//                 redirect(PHP_FILE . C('USER_AUTH_GATEWAY'));
+//             }else{
+//                 $this->mtReturn(300,'对不起，您的权限不足！请不要越级操作！');
+//             }
+//             echo "<script> alert('权限不足');</script>";
+//             echo "<script> alert('aaa');window.location='index.php?c=Public&a=login';</script>";
+//         }exit;
+//     }
     
     public function index() {
         $model = M();
-        $map="status=1";
         if (method_exists($this, '_filter')) {
-            $this->_filter($map);
+            $this->_filter($model);
         }
     
-        $voList= $model->where($map)->select();
-        Tpl($voList);
+        $record= $model->select();
+        require Tpl();
     }
     
     public function insert() {
         $model = M();
         //保存当前数据对象
-        exit();
         $list = $model->insert($_POST);
         if ($list !== false) {
             $this->mtReturn(200, '新增成功!');
@@ -25,65 +39,50 @@ class base{
     }
     
     public function add() {
-        Tpl();
+        require Tpl();
     }
     
     public function edit() {
         $model = M();
         $id = $_REQUEST ['id'];
-        $vo = $model->where($map)->find();
-        $this->display();
+        $vo = $model->where("id=$id")->find();
+        require Tpl();
     }
     
     public function update() {
-        $model = D($this->dbname);
-        if (false === $data= $model->create()) {
-    
-            $this->mtReturn(300, $model->getError());
-        }
-        if (method_exists($this, 'before_update')) {
-            $data = $this->before_update($data);
-    
-        }
-        // 更新数据
-        $list = $model->save($data);
+        $id=$_POST['id'];
+        unset($_POST['id']);
+        $list =  M()->where("id=$id")->update($_POST);
         if (false !== $list) {
-            if( method_exists($this, 'after_update')){
-                $pk = $model->getPk ();
-                $this->after_update($data[$pk]);
-            }
             $this->mtReturn(200, '编辑成功!');
         } else {
-    
             $this->mtReturn(300, '编辑失败!');
         }
     }
     
-    
-    function foreverdelete(){
-        $model = D($this->dbname);
-        if (! empty ( $model )) {
-            $pk = $model->getPk ();
-            $id = $_REQUEST ['id'];
-            if (isset ( $id )) {
-                if (method_exists($this, 'before_foreverdelete')) {
-                    $this->before_foreverdelete($id);
-                }
-    
-                $condition = array ($pk => array ('in', explode ( ',', $id ) ) );
-                if (false !== $model->where ( $condition )->delete ()) {
-                    if (method_exists($this, 'after_foreverdelete')) {
-                        $this->after_foreverdelete($id);
-                    }
-                    $this->mtReturn(200, '删除成功！','','forward',cookie('_currentUrl_'));
-                } else {
-                    $this->mtReturn(300, '删除失败！');
-                }
-            } else {
-                $this->mtReturn(300, '非法操作！');
-            }
+    public function delete() {
+        if(!empty($_REQUEST ['id'])){
+            $where="id={$_REQUEST ['id']}";
+        }elseif(!empty($_GET['ids'])){
+            $ids=$_GET['ids'];
+            $where="id in($ids)";
         }
-        $this->forward ();
+        $list=M()->where($where)->delete();
+        if($list) {
+            $this->mtReturn(200, '删除成功！');
+        }else {
+            $this->mtReturn(300, '删除失败！');
+        }
+    }
+    
+    public function mtReturn($status,$info,$navTabId='',$callbackType='closeCurrent',$forwardUrl='',$rel='', $type='') {
+        $result['statusCode'] = $status; // dwzjs
+        $result['navTabId'] = $navTabId; // dwzjs
+        $result['callbackType'] = $callbackType; // dwzjs
+        $result['message'] = $info; // dwzjs
+        $result['forwardUrl'] = $forwardUrl;
+        $result['rel'] = $rel;
+        echo json_encode($result);
     }
     
     public function selectedDelete() {
@@ -117,12 +116,7 @@ class base{
         $this->forward();
     }
     
-    
-    
-    
-    
     public function forbid() {
-    
         $model = D($this->dbname);
         $pk = $model->getPk();
         $id = $_REQUEST ['id'];
@@ -130,12 +124,9 @@ class base{
         $list = $model->where($condition)->setField('status',0);
         if ($list !== false) {
             $this->mtReturn(200, '禁用成功！','','forward',cookie('_currentUrl_'));
-    
         } else {
             $this->mtReturn(300, '禁用失败！');
-    
         }
-    
     }
     
     function resume() {
@@ -144,16 +135,13 @@ class base{
         $id = $_GET ['id'];
         $condition = array($pk => array('in', explode(',', $id)));
         if (false !== $model->where($condition)->setField('status',1)) {
-    
             $this->mtReturn(200, '恢复成功！','','forward',cookie('_currentUrl_'));
-    
         } else {
             $this->mtReturn(300, '恢复失败！');
-    
         }
     }
-    public function willhidden() {
     
+    public function willhidden() {
         $model = D($this->dbname);
         $pk = $model->getPk();
         $id = $_REQUEST ['id'];
@@ -161,12 +149,9 @@ class base{
         $list = $model->where($condition)->setField('show',0);
         if ($list !== false) {
             $this->mtReturn(200, '隐藏成功！','','forward',cookie('_currentUrl_'));
-    
         } else {
             $this->mtReturn(300, '隐藏失败！');
-    
         }
-    
     }
     
     function willshow() {
@@ -175,12 +160,9 @@ class base{
         $id = $_GET ['id'];
         $condition = array($pk => array('in', explode(',', $id)));
         if (false !== $model->where($condition)->setField('show',1)) {
-    
             $this->mtReturn(200, '显示成功！','','forward',cookie('_currentUrl_'));
-    
         } else {
             $this->mtReturn(300, '显示失败！');
-    
         }
     }
 }
