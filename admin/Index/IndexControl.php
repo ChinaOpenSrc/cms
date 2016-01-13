@@ -1,7 +1,7 @@
 <?php
 class IndexControl{
     public function index(){
-        echo $a=11111;
+        $a=11111;
         Tpl();
     }
     

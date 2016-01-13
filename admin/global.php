@@ -1,8 +1,8 @@
 <?php
-define("DIR",str_replace("\\","/",dirname(__DIR__)));
-define("__ROOT__",substr(DIR,strrpos(DIR,"/")));
+define("DIR",str_replace("\\","/",dirname(__DIR__)));//项目根目录绝对路径
 $a_name=empty($_REQUEST['a'])?"index":$_REQUEST['a'];
 $c_name=empty($_REQUEST['c'])?"Index":$_REQUEST['c'];
+
 define("CNAME",$c_name);
 define("ANAME",$a_name);
 require DIR.'/include/common.php';
@@ -29,7 +29,7 @@ function C($key=""){
     }
 }
 
-function inti(){
+function init(){
     
     if(version_compare(PHP_VERSION,'5.4.0','<')) {
         ini_set('magic_quotes_runtime',0);

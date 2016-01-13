@@ -65,7 +65,7 @@ require DIR."/admin/Public/tpl/common.php";
     </thead>
     <tbody>
 
-       <?php if($record[0])foreach ($record[0] as $v){?>
+       <?php if($record)foreach ($record as $v){?>
         <tr>
             <td></td>
             <td><?php echo $v['name']?></td>

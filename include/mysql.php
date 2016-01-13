@@ -1,4 +1,4 @@
-<?
+<?php
 
 class mysqlDao{
 	var $conn;
@@ -9,9 +9,10 @@ class mysqlDao{
 	var $db_encoding;
 	var $tables;
 	var $debug=false;
+	var $LastSql;
 	
 	var $sql = array(
-	    "field" => "",
+	    "field" => "*",
 	    "where" => "",
 	    "order" => "",
 	    "limit" => "",
@@ -29,17 +30,17 @@ class mysqlDao{
     function __call($methodName,$args){
         $methodName=strtolower($methodName);
         if(isset($this->sql[$methodName])){
-            if($methodName=="where" && $args){
-                $this->sql[$methodName]="where {$args[0]}";
-            }elseif ($methodName=="group" && $args){
+            if($methodName=="where" && !empty($args)){
+                $this->sql[$methodName].="where {$args[0]}";
+            }elseif ($methodName=="group" && !empty($args)){
                 $this->sql[$methodName]="GROUP BY {$args[0]}";
-            }elseif ($methodName=="order" && $args){
+            }elseif ($methodName=="order" && !empty($args)){
                 $this->sql[$methodName]="order BY {$args[0]}";
-            }elseif ($methodName=="having" && $args){
+            }elseif ($methodName=="having" && !empty($args)){
                 $this->sql[$methodName]="having {$args[0]}";
-            }elseif ($methodName=="limit" && $args){
+            }elseif ($methodName=="limit" && !empty($args)){
                 $this->sql[$methodName]="limit {$args[0]}";
-            }elseif($methodName="field" && $args){
+            }elseif($methodName="field" && !empty($args)){
                 $this->sql[$methodName]=$args[0];
             }
         }
@@ -105,7 +106,7 @@ class mysqlDao{
 	}
 	
 	//最后一个参数表示是否需要sql转义,默认为自动判断,可为true,false,"auto"
-	function insert($table,$array,$escape="auto"){
+	function insert($array,$escape="auto"){
 		//可能需要对$array进行转义
 		$array=$this->escape_data($array,$escape);
 		
@@ -123,7 +124,8 @@ class mysqlDao{
 			else
 				$value_str.=",'".$vl."'";
 		}
-		$sql="insert into ".$table."(".$field_str.") values(".$value_str.")";
+		$tables=C("db_prefix").$this->tables;
+		echo $sql="insert into ".$tables."(".$field_str.") values(".$value_str.")";
 		$this->mysql_query($sql,$this->conn);
 		return $this->get_insert_id();
 	}
@@ -139,7 +141,7 @@ class mysqlDao{
 	    return $datalist;
 	}
 	
-	function update($table,$array,$where,$escape="auto"){
+	function update($array,$escape="auto"){
 		if(!is_array($array) || count($array)==0)
 			return;
 		//可能需要对$array进行转义
@@ -151,15 +153,17 @@ class mysqlDao{
 				$data_str.=$key."='".$vl."'";
 			else
 				$data_str.=",".$key."='".$vl."'";
-		}	
-		$sql="update ".$table." set ".$data_str." ".$where;
+		}
+		$tables=C("db_prefix").$this->tables;
+		$sql="update ".$tables." set ".$data_str." {$this->sql['where']}";
 			
 			$this->mysql_query($sql,$this->conn);
 		return $this->get_affect_rows();
 	}
 	
-	function delete($table,$where){
-		$sql="delete from ".$table." ".$where;
+	function delete(){
+	    $tables=C("db_prefix").$this->tables;
+		$sql="delete from ".$tables." {$this->sql['where']}";
 		$this->mysql_query($sql,$this->conn);
 		return $this->get_affect_rows();
 	}

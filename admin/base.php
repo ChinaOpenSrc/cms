@@ -1,76 +1,38 @@
 <?php
 class base{
-    protected function _list($model, $map, $asc = false) {
-        $voList = $model->where($map)->select();
-        if( method_exists($this, '_after_list')){
-            $voList=$this->_after_list($voList);
-        }
-        //模板赋值显示
-//         cookie('_currentUrl_', __SELF__);
-        
-        $record=array($voList,$map);
-        Tpl($record);
-    }
     
     public function index() {
         $model = M();
-        $map = $this->_search();
-    
+        $map="status=1";
         if (method_exists($this, '_filter')) {
             $this->_filter($map);
         }
     
-        if (!empty($model)) {
-            $this->_list($model, $map);
-        }
-    }
-    
-    protected function _search() {
-        $model = M();
-        $map = array();
-        foreach ($model->getDbFields() as $key => $val) {
-            if (isset($_REQUEST[$val]) && $_REQUEST[$val]!='') {
-                if(in_array($val, array('name','account','content','title'))){//需要模糊查询的字段，可再添加，如title等
-                    $map [$val] = array('like','%'.$_REQUEST [$val].'%');
-                }else{
-                    $map [$val] = $_REQUEST [$val];
-                }
-            }
-        }
-        return $map;
+        $voList= $model->where($map)->select();
+        Tpl($voList);
     }
     
     public function insert() {
-        $model = D($this->dbname);
-        if (false === $data= $model->create()) {
-            $this->mtReturn(300, $model->getError());
-        }
-        if (method_exists($this, 'before_insert')) {
-            $data = $this->before_insert($data);
-        }
-    
+        $model = M();
         //保存当前数据对象
-        $list = $model->data($data)->add();
+        exit();
+        $list = $model->insert($_POST);
         if ($list !== false) {
-            if( method_exists($this, 'after_insert')){
-                $this->after_insert($list);
-            }
             $this->mtReturn(200, '新增成功!');
         } else {
             $this->mtReturn(300, '新增失败!');
         }
     }
     
-    public function add($html='') {
-        $this->display($html);
+    public function add() {
+        Tpl();
     }
     
-    public function edit($html='') {
-        $model = D($this->dbname);
+    public function edit() {
+        $model = M();
         $id = $_REQUEST ['id'];
-        $map[$model->getPk()]=$id;
         $vo = $model->where($map)->find();
-        $this->display($html);
+        $this->display();
     }
     
     public function update() {
@@ -90,7 +52,6 @@ class base{
                 $pk = $model->getPk ();
                 $this->after_update($data[$pk]);
             }
-    
             $this->mtReturn(200, '编辑成功!');
         } else {
     
@@ -107,9 +68,6 @@ class base{
             if (isset ( $id )) {
                 if (method_exists($this, 'before_foreverdelete')) {
                     $this->before_foreverdelete($id);
-    
-    
-                    	
                 }
     
                 $condition = array ($pk => array ('in', explode ( ',', $id ) ) );
@@ -118,18 +76,16 @@ class base{
                         $this->after_foreverdelete($id);
                     }
                     $this->mtReturn(200, '删除成功！','','forward',cookie('_currentUrl_'));
-    
                 } else {
                     $this->mtReturn(300, '删除失败！');
-    
                 }
             } else {
                 $this->mtReturn(300, '非法操作！');
-                	
             }
         }
         $this->forward ();
     }
+    
     public function selectedDelete() {
         $model = D($this->dbname);
         if (!empty($model)) {
